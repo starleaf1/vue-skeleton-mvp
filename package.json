@@ -57,8 +57,6 @@
     "@vue/cli-plugin-unit-mocha": "^4.5.11",
     "@vue/eslint-config-prettier": "^6.0.0",
     "@vue/test-utils": "^1.1.2",
-    "babel-eslint": "^10.1.0",
-    "babel-plugin-istanbul": "^6.0.0",
     "chai": "^4.2.0",
     "eslint": "^7.18.0",
     "eslint-config-formidable": "^4.0.0",
