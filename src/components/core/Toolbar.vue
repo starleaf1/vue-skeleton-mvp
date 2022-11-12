@@ -142,11 +142,11 @@
 
 <script>
 import { mapGetters } from 'vuex'
-import LocaleChanger from '@/components/core/LocaleChanger'
+import LocaleChanger from '@/components/core/LocaleChanger.vue'
 import ResizeText from 'vue-resize-text'
 
 export default {
-  name: 'Toolbar',
+  name: 'ToolBar',
   metaInfo() {
     return {
       title: this.$store.getters.appTitle,

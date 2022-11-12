@@ -3,7 +3,7 @@ import axios from 'axios'
 import { checkIfTokenNeedsRefresh } from '@/utils/utils.js'
 import { checkForUpdates } from '@/utils/updates.js'
 
-axios.defaults.baseURL = process.env.VUE_APP_API_URL || ''
+axios.defaults.baseURL = import.meta.env.VUE_APP_API_URL || ''
 axios.defaults.headers.common['Accept-Language'] =
   JSON.parse(localStorage.getItem('locale')) || 'en'
 
@@ -38,7 +38,7 @@ axios.interceptors.response.use(
     // Do something with response data
     // Checks if app is being used in mobile
     if (
-      response.config.url !== `${process.env.VUE_APP_API_URL}/token` &&
+      response.config.url !== `${import.meta.env.VUE_APP_API_URL}/token` &&
       response.config.url !== `${window.location.origin}/version.json`
     ) {
       checkForUpdates()
