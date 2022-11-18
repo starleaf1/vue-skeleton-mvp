@@ -1,12 +1,19 @@
 import { defineStore, ref } from 'pinia'
 import { buildSuccess, handleError } from '../utils/utils'
+import { useAuthStore } from './auth'
+import api from '@/services/api/adminCities'
+import { useLoadingStore } from './loading'
 
 export const useVerifyStore = defineStore('VerifyStore', () => {
+  const authStore = useAuthStore()
   const emailVerified = ref(false)
+
+  const loadingStore = useLoadingStore()
 
   const sendVerify = (id) => {
     return new Promise((resolve, reject) => {
-      commit(types.SHOW_LOADING, true)
+      // commit(types.SHOW_LOADING, true)
+      loadingStore.showLoading = false
       const data = {
         id
       }
@@ -22,24 +29,25 @@ export const useVerifyStore = defineStore('VerifyStore', () => {
               const _user = JSON.parse(localStorage.getItem('user'))
               _user.verified = verified
               localStorage.setItem('user', JSON.stringify(_user))
-              commit(types.SAVE_USER, _user)
+              // commit(types.SAVE_USER, _user)
+              authStore.saveUser(_user)
             }
             buildSuccess(
               {
                 msg: 'verify.EMAIL_VERIFIED'
               },
-              commit,
               resolve
             )
           }
         })
         .catch((error) => {
-          handleError(error, commit, reject)
+          handleError(error, reject)
         })
     })
   }
 
   return {
-    emailVerified
+    emailVerified,
+    sendVerify
   }
 })

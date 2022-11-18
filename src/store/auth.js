@@ -1,6 +1,10 @@
 import { defineStore, ref } from 'pinia'
 import router from '@/router'
 import api from '@/services/api/auth'
+import { addMinutes, format } from 'date-fns'
+import { handleError } from '../utils/utils'
+
+const MINUTES_TO_CHECK_FOR_TOKEN_REFRESH = 1440
 
 export const useAuthStore = defineStore('AuthenticationStore', () => {
   const user = ref(null)
@@ -43,12 +47,44 @@ export const useAuthStore = defineStore('AuthenticationStore', () => {
     // commit(types.EMAIL_VERIFIED, user.verified)
   }
 
+  const refreshToken = () => {
+    return new Promise((resolve, reject) => {
+      api
+        .refreshToken()
+        .then((response) => {
+          if (response.status === 200) {
+            window.localStorage.setItem(
+              'token',
+              JSON.stringify(response.data.token)
+            )
+            window.localStorage.setItem(
+              'tokenExpiration',
+              JSON.stringify(
+                format(
+                  addMinutes(new Date(), MINUTES_TO_CHECK_FOR_TOKEN_REFRESH),
+                  't'
+                )
+              )
+            )
+            // commit(types.SAVE_TOKEN, response.data.token)
+            saveToken(response.data.token)
+            resolve()
+          }
+        })
+        .catch((error) => {
+          handleError(error, reject)
+        })
+    })
+  }
+
   return {
     user,
     token,
     isTokenSet,
     userLogout,
     saveUser,
-    saveToken
+    saveToken,
+    autoLogin,
+    refreshToken
   }
 })
