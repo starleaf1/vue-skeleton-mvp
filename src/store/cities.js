@@ -21,12 +21,18 @@ export const useCitiesStore = defineStore('citiesStore', () => {
           }
         })
         .catch((error) => {
-          handleError(error, commit, reject)
+          handleError(error, reject)
         })
     })
   }
 
+  const fillAllCities = (cities) => {
+    allCities.value = cities
+  }
+
   return {
-    allCities
+    allCities,
+    getAllCities,
+    fillAllCities
   }
 })
