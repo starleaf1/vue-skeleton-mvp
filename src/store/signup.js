@@ -1,7 +1,7 @@
 import router from '@/router'
 import api from '@/services/api/signup'
 import { buildSuccess, handleError } from '@/utils/utils.js'
-import { defineStore, ref } from 'pinia'
+import { defineStore } from 'pinia'
 import { useAuthStore } from './auth'
 import { useLoadingStore } from './loading'
 
