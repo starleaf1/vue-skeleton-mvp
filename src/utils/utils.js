@@ -7,10 +7,10 @@ import { useSuccessStore } from '../store/success'
 import { useErrorStore } from '../store/error'
 import { useAuthStore } from '../store/auth'
 
-const loadingStore = useLoadingStore()
-const successStore = useSuccessStore()
-const errorStore = useErrorStore()
-const authStore = useAuthStore()
+// const loadingStore = useLoadingStore()
+// const successStore = useSuccessStore()
+// const errorStore = useErrorStore()
+// const authStore = useAuthStore()
 
 const localesDateFns = {
   es,
@@ -83,6 +83,10 @@ export const buildPayloadPagination = (pagination, search) => {
 
 // Catches error connection or any other error (checks if error.response exists)
 export const handleError = (error, /* commit, */ reject) => {
+  const loadingStore = useLoadingStore()
+  const errorStore = useErrorStore()
+  const authStore = useAuthStore()
+
   let errMsg = ''
   // Resets errors in store
   // commit(types.SHOW_LOADING, false)
@@ -114,6 +118,10 @@ export const handleError = (error, /* commit, */ reject) => {
 }
 
 export const buildSuccess = (msg, resolve, resolveParam = undefined) => {
+  const loadingStore = useLoadingStore()
+  const successStore = useSuccessStore()
+  const errorStore = useErrorStore()
+
   // commit(types.SHOW_LOADING, false)
   loadingStore.showLoading = false
   // commit(types.SUCCESS, null)
@@ -132,6 +140,8 @@ export const buildSuccess = (msg, resolve, resolveParam = undefined) => {
 
 // Checks if tokenExpiration in localstorage date is past, if so then trigger an update
 export const checkIfTokenNeedsRefresh = () => {
+  const authStore = useAuthStore()
+
   // Checks if time set in localstorage is past to check for refresh token
   if (
     window.localStorage.getItem('token') !== null &&
