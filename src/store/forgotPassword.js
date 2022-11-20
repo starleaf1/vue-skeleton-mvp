@@ -1,6 +1,7 @@
 import api from '@/services/api/forgotPassword'
 import { buildSuccess, handleError } from '@/utils/utils.js'
-import { defineStore, ref } from 'pinia'
+import { defineStore } from 'pinia'
+import { ref } from 'vue'
 import { useLoadingStore } from './loading'
 
 export const useForgotPasswordStore = defineStore('ForgotPasswordStore', () => {

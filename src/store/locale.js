@@ -1,6 +1,7 @@
 import i18n from '@/plugins/i18n'
 import * as Validator from 'vee-validate'
-import { defineStore, ref } from 'pinia'
+import { defineStore } from 'pinia'
+import { ref } from 'vue'
 import { useErrorStore } from './error'
 import { useSuccessStore } from './success'
 

@@ -1,4 +1,5 @@
-import { defineStore, ref } from 'pinia'
+import { defineStore } from 'pinia'
+import { ref } from 'vue'
 
 export const useSuccessStore = defineStore('SuccessStore', () => {
   const showSuccessMessage = ref(false)

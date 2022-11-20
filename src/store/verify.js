@@ -1,4 +1,5 @@
-import { defineStore, ref } from 'pinia'
+import { defineStore } from 'pinia'
+import { ref } from 'vue'
 import { buildSuccess, handleError } from '../utils/utils'
 import { useAuthStore } from './auth'
 import api from '@/services/api/adminCities'

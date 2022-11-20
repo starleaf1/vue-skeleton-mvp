@@ -1,4 +1,5 @@
-import { defineStore, ref } from 'pinia'
+import { defineStore } from 'pinia'
+import { ref } from 'vue'
 import api from '@/services/api/cities'
 import { handleError } from '@/utils/utils.js'
 

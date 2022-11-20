@@ -1,4 +1,5 @@
-import { defineStore, ref } from 'pinia'
+import { defineStore } from 'pinia'
+import { ref } from 'vue'
 import router from '@/router'
 import api from '@/services/api/auth'
 import { addMinutes, format } from 'date-fns'
