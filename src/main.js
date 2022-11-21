@@ -2,6 +2,7 @@ import Vue from 'vue'
 import '@/plugins/axios'
 import vuetify from '@/plugins/vuetify'
 import '@/plugins/veevalidate'
+import { createPinia, PiniaVuePlugin, setActivePinia } from 'pinia'
 import '@/plugins/common'
 import '@/plugins/googleAnalytics'
 import i18n from '@/plugins/i18n'
@@ -10,6 +11,9 @@ import router from '@/router'
 import { store } from '@/store'
 import VuetifyConfirm from 'vuetify-confirm'
 
+const pinia = createPinia()
+setActivePinia(pinia)
+Vue.use(PiniaVuePlugin)
 Vue.config.productionTip = false
 Vue.use(VuetifyConfirm, { vuetify })
 
