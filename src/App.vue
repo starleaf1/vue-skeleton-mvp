@@ -17,8 +17,10 @@
 import Toolbar from '@/components/core/Toolbar.vue'
 import Loading from '@/components/core/Loading.vue'
 import Footer from '@/components/core/Footer.vue'
+import computed from 'vue'
+import { useAppStore, defineComponent } from '@/store/app'
 
-export default {
+export default defineComponent({
   name: 'App',
   metaInfo() {
     return {
@@ -64,12 +66,18 @@ export default {
     Loading,
     Footer
   },
-  computed: {
-    appTitle() {
-      return this.$store.getters.appTitle
-    }
+  // computed: {
+  //   appTitle() {
+  //     return this.$store.getters.appTitle
+  //   }
+  // }
+  setup() {
+    const appStore = useAppStore()
+    const appTitle = computed(() => appStore.appTitle)
+
+    return { appTitle }
   }
-}
+})
 </script>
 
 <style>

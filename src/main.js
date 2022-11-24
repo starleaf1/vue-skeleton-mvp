@@ -10,11 +10,13 @@ import App from '@/App.vue'
 import router from '@/router'
 import { store } from '@/store'
 import VuetifyConfirm from 'vuetify-confirm'
+import VueCompositionAPI from '@vue/composition-api'
 
 const pinia = createPinia()
 setActivePinia(pinia)
 Vue.use(PiniaVuePlugin)
 Vue.config.productionTip = false
+Vue.use(VueCompositionAPI)
 Vue.use(VuetifyConfirm, { vuetify })
 
 const app = new Vue({

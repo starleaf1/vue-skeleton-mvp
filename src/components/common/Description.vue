@@ -3,10 +3,11 @@
 </template>
 
 <script>
-export default {
+import { defineComponent } from 'vue'
+export default defineComponent({
   name: 'Description',
   props: {
     description: String
   }
-}
+})
 </script>

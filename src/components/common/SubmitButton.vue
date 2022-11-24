@@ -10,7 +10,10 @@
 </template>
 
 <script>
-export default {
+import { defineComponent, computed } from 'vue'
+import { useLoadingStore } from '@/store/loading'
+
+export default defineComponent({
   name: 'SubmitButton',
   props: {
     color: String,
@@ -18,13 +21,23 @@ export default {
     customClass: String,
     text: Boolean
   },
-  computed: {
-    disabledButton() {
-      return this.$store.state.loading.showLoading
-    },
-    colorString() {
-      return this.color ? this.color : 'secondary'
+  setup(props) {
+    const loadingStore = useLoadingStore()
+    const disabledButton = computed(() => loadingStore.showLoading)
+    const colorString = computed(() => props.color ?? 'secondary')
+
+    return {
+      disabledButton,
+      colorString
     }
   }
-}
+  // computed: {
+  //   disabledButton() {
+  //     return this.$store.state.loading.showLoading
+  //   },
+  //   colorString() {
+  //     return this.color ? this.color : 'secondary'
+  //   }
+  // }
+})
 </script>
