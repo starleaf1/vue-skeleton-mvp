@@ -26,54 +26,98 @@
 
 <script>
 import CountryFlag from 'vue-country-flag'
+import { defineComponent, ref, computed } from 'vue'
+import { useLocaleStore } from '@/store/locale'
+import i18n from '../../plugins/i18n'
 
-export default {
-  data() {
+export default defineComponent({
+  setup() {
+    const showMenu = ref(false)
+    const langs = [
+      {
+        lang: 'en',
+        flag: 'gb',
+        class: 'btnEN'
+      },
+      {
+        lang: 'es',
+        flag: 'es',
+        class: 'btnES'
+      },
+      {
+        lang: 'fr',
+        flag: 'fr',
+        class: 'btnFR'
+      },
+      {
+        lang: 'cn',
+        flag: 'cn',
+        class: 'btnCN'
+      },
+      {
+        lang: 'ua',
+        flag: 'ua',
+        class: 'btnUA'
+      }
+    ]
+
+    const { switchLocale } = useLocaleStore()
+
+    const displayLocale = computed(() => i18n.locale)
+
     return {
-      showMenu: false,
-      langs: [
-        {
-          lang: 'en',
-          flag: 'gb',
-          class: 'btnEN'
-        },
-        {
-          lang: 'es',
-          flag: 'es',
-          class: 'btnES'
-        },
-        {
-          lang: 'fr',
-          flag: 'fr',
-          class: 'btnFR'
-        },
-        {
-          lang: 'cn',
-          flag: 'cn',
-          class: 'btnCN'
-        },
-        {
-          lang: 'ua',
-          flag: 'ua',
-          class: 'btnUA'
-        }
-      ]
+      showMenu,
+      langs,
+      switchLocale,
+      displayLocale
     }
   },
   components: {
     CountryFlag
-  },
-  methods: {
-    switchLocale(lang) {
-      this.$store.dispatch('setLocale', lang)
-    }
-  },
-  computed: {
-    displayLocale() {
-      return this.$i18n.locale
-    }
   }
-}
+  // data() {
+  //   return {
+  //     showMenu: false,
+  //     langs: [
+  //       {
+  //         lang: 'en',
+  //         flag: 'gb',
+  //         class: 'btnEN'
+  //       },
+  //       {
+  //         lang: 'es',
+  //         flag: 'es',
+  //         class: 'btnES'
+  //       },
+  //       {
+  //         lang: 'fr',
+  //         flag: 'fr',
+  //         class: 'btnFR'
+  //       },
+  //       {
+  //         lang: 'cn',
+  //         flag: 'cn',
+  //         class: 'btnCN'
+  //       },
+  //       {
+  //         lang: 'ua',
+  //         flag: 'ua',
+  //         class: 'btnUA'
+  //       }
+  //     ]
+  //   }
+  // },
+  // methods: {
+  //   switchLocale(lang) {
+  //     this.$store.dispatch('setLocale', lang)
+  //   }
+  // },
+  // computed: {
+  //   displayLocale() {
+  //     return this.$i18n.locale
+  //   }
+  // }
+})
 </script>
 
 <style>
