@@ -1,5 +1,6 @@
 import Vue from 'vue'
 import VueI18n from 'vue-i18n'
+import { createI18n } from 'vue-i18n-composable'
 
 Vue.use(VueI18n)
 
@@ -20,7 +21,7 @@ const loadLocaleMessages = () => {
   return messages
 }
 
-export default new VueI18n({
+export default createI18n({
   locale: navigator.language.slice(0, 2) || 'en',
   fallbackLocale: 'en',
   messages: loadLocaleMessages()
