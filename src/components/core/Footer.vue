@@ -10,12 +10,27 @@
 </template>
 
 <script>
-export default {
+import { defineComponent, computed } from 'vue'
+import { useAppStore } from '@/store/app'
+
+// export default {
+//   name: 'Footer',
+//   computed: {
+//     appVersion() {
+//       return this.$store.getters.appVersion
+//     }
+//   }
+// }
+
+export default defineComponent({
   name: 'Footer',
-  computed: {
-    appVersion() {
-      return this.$store.getters.appVersion
+  setup() {
+    const appStore = useAppStore()
+    const appVersion = computed(() => appStore.appVersion)
+
+    return {
+      appVersion
     }
   }
-}
+})
 </script>
