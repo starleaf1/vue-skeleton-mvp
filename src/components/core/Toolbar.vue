@@ -141,26 +141,40 @@
 </template>
 
 <script>
-import { mapGetters } from 'vuex'
+// import { mapGetters } from 'vuex'
+import { defineComponent, computed, ref, watchEffect } from 'vue'
 import LocaleChanger from '@/components/core/LocaleChanger'
 import ResizeText from 'vue-resize-text'
+import { useAppStore } from '@/store/app'
+import { useAuthStore } from '@/store/auth'
+import i18n from '../../plugins/i18n'
+import { useI18n } from 'vue-i18n-composable'
+import vuetify from '@/plugins/vuetify'
 
-export default {
+export default defineComponent({
   name: 'Toolbar',
   metaInfo() {
+    const appStore = useAppStore()
     return {
-      title: this.$store.getters.appTitle,
+      // title: this.$store.getters.appTitle,
+      title: appStore.appTitle,
       htmlAttrs: {
-        lang: this.$i18n.locale
+        // lang: this.$i18n.locale
+        lang: i18n
       },
       meta: [
         { name: 'msapplication-TileColor', content: '#ffc40d' },
         { name: 'theme-color', content: '#ffffff' },
         {
           name: 'apple-mobile-web-app-title',
-          content: this.$store.getters.appTitle
+          // content: this.$store.getters.appTitle
+          content: appStore.appTitle
         },
-        { name: 'application-name', content: this.$store.getters.appTitle }
+        {
+          name: 'application-name',
+          // content: this.$store.getters.appTitle
+          content: appStore.appTitle
+        }
       ],
       link: [
         {
@@ -192,50 +206,63 @@ export default {
   directives: {
     ResizeText
   },
-  data() {
-    return {
-      isDark: false,
-      sidebar: false
-    }
-  },
-  computed: {
-    ...mapGetters(['appTitle', 'isTokenSet', 'user']),
-    admin() {
-      return this.user !== null ? this.user.role === 'admin' : false
-    },
-    adminItems() {
-      return [
-        {
-          title: this.$t('adminItems.CITIES'),
-          link: 'admin-cities',
-          icon: 'mdi-city',
-          class: 'btnAdminCities'
-        },
-        {
-          title: this.$t('adminItems.USERS'),
-          link: 'admin-users',
-          icon: 'mdi-account-supervisor',
-          class: 'btnAdminUsers'
-        }
-      ]
-    },
-    menuItems() {
-      if (this.isTokenSet) {
+  // data() {
+  //   return {
+  //     isDark: false,
+  //     sidebar: false
+  //   }
+  // },
+
+  setup() {
+    const appStore = useAppStore()
+    const authStore = useAuthStore()
+    const { t } = useI18n()
+
+    const dark = localStorage.getItem('dark')
+    const isDark = ref(dark ? JSON.parse(dark) : false)
+
+    const sidebar = ref(false)
+
+    const appTitle = computed(() => appStore.appTitle)
+    const isTokenSet = computed(() => authStore.isTokenSet)
+    const user = computed(() => authStore.user)
+
+    const admin = computed(() =>
+      user.value !== null ? user.value.role === 'admin' : false
+    )
+
+    const adminItems = computed(() => [
+      {
+        title: t('adminItems.CITIES'),
+        link: 'admin-cities',
+        icon: 'mdi-city',
+        class: 'btnAdminCities'
+      },
+      {
+        title: t('adminItems.USERS'),
+        link: 'admin-users',
+        icon: 'mdi-account-supervisor',
+        class: 'btnAdminUsers'
+      }
+    ])
+
+    const menuItems = computed(() => {
+      if (isTokenSet.value) {
         return [
           {
-            title: this.$t('menuItems.HOME'),
+            title: t('menuItems.HOME'),
             link: 'home',
             icon: 'mdi-home',
             class: 'btnHome'
           },
           {
-            title: this.$t('menuItems.ABOUT'),
+            title: t('menuItems.ABOUT'),
             link: 'about',
             icon: 'mdi-help-circle-outline',
             class: 'btnAbout'
           },
           {
-            title: this.$t('menuItems.MY_PROFILE'),
+            title: t('menuItems.MY_PROFILE'),
             link: 'profile',
             icon: 'mdi-face',
             class: 'btnProfile'
@@ -244,45 +271,132 @@ export default {
       }
       return [
         {
-          title: this.$t('menuItems.HOME'),
+          title: t('menuItems.HOME'),
           link: 'landing',
           icon: 'mdi-home'
         },
         {
-          title: this.$t('menuItems.ABOUT'),
+          title: t('menuItems.ABOUT'),
           link: 'about',
           icon: 'mdi-help-circle-outline',
           class: 'btnAbout'
         },
         {
-          title: this.$t('menuItems.LOGIN'),
+          title: t('menuItems.LOGIN'),
           link: 'login',
           icon: 'mdi-lock',
           class: 'btnLogin'
         },
         {
-          title: this.$t('menuItems.SIGNUP'),
+          title: t('menuItems.SIGNUP'),
           link: 'signup',
           icon: 'mdi-plus-circle-outline',
           class: 'btnLogin'
         }
       ]
+    })
+
+    watchEffect(() => {
+      vuetify.theme.dark = isDark.value
+      localStorage.setItem('dark', isDark.value)
+    })
+
+    return {
+      isDark,
+      sidebar,
+      appTitle,
+      isTokenSet,
+      user,
+      admin,
+      adminItems,
+      menuItems
     }
-  },
-  methods: {
-    userLogout() {
-      this.$store.dispatch('userLogout')
-    }
-  },
-  watch: {
-    isDark() {
-      this.$vuetify.theme.dark = this.isDark
-      localStorage.setItem('dark', this.isDark)
-    }
-  },
-  created() {
-    const dark = localStorage.getItem('dark')
-    this.isDark = dark ? JSON.parse(dark) : false
   }
-}
+  // computed: {
+  // ...mapGetters(['appTitle', 'isTokenSet', 'user']),
+  // admin() {
+  //   return this.user !== null ? this.user.role === 'admin' : false
+  // },
+  // adminItems() {
+  //   return [
+  //     {
+  //       title: t('adminItems.CITIES'),
+  //       link: 'admin-cities',
+  //       icon: 'mdi-city',
+  //       class: 'btnAdminCities'
+  //     },
+  //     {
+  //       title: t('adminItems.USERS'),
+  //       link: 'admin-users',
+  //       icon: 'mdi-account-supervisor',
+  //       class: 'btnAdminUsers'
+  //     }
+  //   ]
+  // },
+  //   menuItems() {
+  //     if (this.isTokenSet) {
+  //       return [
+  //         {
+  //           title: t('menuItems.HOME'),
+  //           link: 'home',
+  //           icon: 'mdi-home',
+  //           class: 'btnHome'
+  //         },
+  //         {
+  //           title: t('menuItems.ABOUT'),
+  //           link: 'about',
+  //           icon: 'mdi-help-circle-outline',
+  //           class: 'btnAbout'
+  //         },
+  //         {
+  //           title: t('menuItems.MY_PROFILE'),
+  //           link: 'profile',
+  //           icon: 'mdi-face',
+  //           class: 'btnProfile'
+  //         }
+  //       ]
+  //     }
+  //     return [
+  //       {
+  //         title: t('menuItems.HOME'),
+  //         link: 'landing',
+  //         icon: 'mdi-home'
+  //       },
+  //       {
+  //         title: t('menuItems.ABOUT'),
+  //         link: 'about',
+  //         icon: 'mdi-help-circle-outline',
+  //         class: 'btnAbout'
+  //       },
+  //       {
+  //         title: t('menuItems.LOGIN'),
+  //         link: 'login',
+  //         icon: 'mdi-lock',
+  //         class: 'btnLogin'
+  //       },
+  //       {
+  //         title: t('menuItems.SIGNUP'),
+  //         link: 'signup',
+  //         icon: 'mdi-plus-circle-outline',
+  //         class: 'btnLogin'
+  //       }
+  //     ]
+  //   }
+  // },
+  // methods: {
+  //   userLogout() {
+  //     this.$store.dispatch('userLogout')
+  //   }
+  // },
+  // watch: {
+  //   isDark() {
+  //     this.$vuetify.theme.dark = this.isDark
+  //     localStorage.setItem('dark', this.isDark)
+  //   }
+  // },
+  // created() {
+  //   const dark = localStorage.getItem('dark')
+  //   this.isDark = dark ? JSON.parse(dark) : false
+  // }
+})
 </script>
