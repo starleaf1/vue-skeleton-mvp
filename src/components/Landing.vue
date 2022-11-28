@@ -7,3 +7,14 @@
     <ProjectDescription />
   </v-container>
 </template>
+
+<script>
+import { defineComponent } from 'vue'
+import { t as $t } from 'vue-i18n-composable'
+
+export default defineComponent({
+  setup() {
+    return { $t }
+  }
+})
+</script>

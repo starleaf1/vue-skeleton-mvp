@@ -58,34 +58,63 @@
 
 <script>
 import router from '@/router'
-import { mapActions } from 'vuex'
+// import { mapActions } from 'vuex'
+import { t as $t } from 'vue-i18n-composable'
+import { defineComponent, ref } from 'vue'
+import { useAuthStore } from '@/store/auth'
 
-export default {
+export default defineComponent({
   metaInfo() {
     return {
       title: this.$store.getters.appTitle,
       titleTemplate: `${this.$t('login.TITLE')} - %s`
     }
   },
-  data() {
-    return {
-      email: '',
-      password: ''
-    }
-  },
-  methods: {
-    ...mapActions(['userLogin']),
-    async submit() {
-      await this.userLogin({
-        email: this.email,
-        password: this.password
+  setup() {
+    const email = ref('')
+    const password = ref('')
+    const authStore = useAuthStore()
+
+    const { userLogin } = authStore
+
+    const submit = async () => {
+      await userLogin({
+        email: email.value,
+        password: password.value
       })
     }
-  },
-  created() {
-    if (this.$store.state.auth.isTokenSet) {
+
+    if (authStore.isTokenSet) {
       router.push({ name: 'home' })
     }
+
+    return {
+      email,
+      password,
+      userLogin,
+      submit,
+      $t
+    }
   }
-}
+  // data() {
+  //   return {
+  //     email: '',
+  //     password: ''
+  //   }
+  // },
+  // methods: {
+  //   ...mapActions(['userLogin']),
+  //   async submit() {
+  //     await this.userLogin({
+  //       email: this.email,
+  //       password: this.password
+  //     })
+  //   }
+  // },
+  // created() {
+  //   if (this.$store.state.auth.isTokenSet) {
+  //     router.push({ name: 'home' })
+  //   }
+  // }
+})
 </script>
