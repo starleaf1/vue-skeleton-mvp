@@ -36,18 +36,32 @@
 </template>
 
 <script>
-export default {
+import { t as $t } from 'vue-i18n-composable'
+import { defineComponent, ref } from 'vue'
+import { useAuthStore } from '@/store/auth'
+import { useVerifyStore } from '@/store/verify'
+
+export default defineComponent({
   metaInfo() {
     return {
       title: this.$store.getters.appTitle,
       titleTemplate: `${this.$t('home.TITLE')} - %s`
     }
   },
-  data() {
-    return {
-      name: this.$store.state.auth.user.name,
-      showVerifyDialog: !this.$store.state.verify.emailVerified
-    }
+  setup() {
+    const authStore = useAuthStore()
+    const verifyStore = useVerifyStore()
+
+    const name = ref(authStore.user.name)
+    const showVerifyDialog = ref(!verifyStore.emailVerified)
+
+    return { name, showVerifyDialog, $t }
   }
-}
+  // data() {
+  //   return {
+  //     name: this.$store.state.auth.user.name,
+  //     showVerifyDialog: !this.$store.state.verify.emailVerified
+  //   }
+  // }
+})
 </script>
