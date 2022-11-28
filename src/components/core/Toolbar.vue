@@ -149,7 +149,7 @@ import { useAppStore } from '@/store/app'
 import { useAuthStore } from '@/store/auth'
 import i18n from '../../plugins/i18n'
 import { useI18n } from 'vue-i18n-composable'
-import vuetify from '@/plugins/vuetify'
+import useVuetify from '@/composables/useVuetify'
 
 export default defineComponent({
   name: 'Toolbar',
@@ -297,7 +297,10 @@ export default defineComponent({
     })
 
     watchEffect(() => {
-      vuetify.theme.dark = isDark.value
+      const vuetify = useVuetify()
+      if (vuetify) {
+        vuetify.theme.dark = isDark.value
+      }
       localStorage.setItem('dark', isDark.value)
     })
 
