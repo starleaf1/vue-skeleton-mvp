@@ -1,4 +1,3 @@
-_
 <template>
   <div>
     <v-data-table
@@ -168,155 +167,143 @@ _
 </template>
 
 <script>
-import { mapActions } from 'vuex'
-import { getFormat, buildPayloadPagination } from '@/utils/utils.js'
+// import { mapActions } from 'vuex'
+import {
+  getFormat as utilGetFormat,
+  buildPayloadPagination
+} from '@/utils/utils.js'
+import { defineComponent, ref, computed, watchEffect } from 'vue'
+import { t as $t } from 'vue-i18n-composable'
+import { useAdminCitiesStore } from '@/store/adminCities'
+import { useLocaleStore } from '@/store/locale'
+import { useConfirm } from '@/composables/useConfirm'
 
-export default {
-  metaInfo() {
-    return {
-      title: this.$store.getters.appTitle,
-      titleTemplate: `${this.$t('cities.TITLE')} - %s`
-    }
-  },
-  data() {
-    return {
-      dataTableLoading: true,
-      delayTimer: null,
-      dialog: false,
-      search: '',
-      pagination: {},
-      editedItem: {},
-      defaultItem: {},
-      fieldsToSearch: ['name']
-    }
-  },
-  computed: {
-    formTitle() {
-      return this.editedItem._id
+export default defineComponent({
+  // metaInfo() {
+  //   return {
+  //     title: this.$store.getters.appTitle,
+  //     titleTemplate: `${this.$t('cities.TITLE')} - %s`
+  //   }
+  // },
+
+  /* eslint-disable max-statements */
+  setup() {
+    const adminCitiesStore = useAdminCitiesStore()
+
+    const dataTableLoading = ref(true)
+    const delayTimer = ref(null)
+    const dialog = ref(false)
+    const search = ref('')
+    const pagination = ref({})
+    const editedItem = ref({})
+    const defaultItem = ref({})
+    const fieldsToSearch = ref(['name'])
+
+    const formTitle = computed(() => {
+      return editedItem.value._id
         ? this.$t('dataTable.EDIT_ITEM')
         : this.$t('dataTable.NEW_ITEM')
-    },
-    headers() {
-      return [
-        {
-          text: this.$i18n.t('dataTable.ACTIONS'),
-          value: '_id',
-          sortable: false,
-          width: 100
-        },
-        {
-          text: this.$i18n.t('cities.headers.NAME'),
-          align: 'left',
-          sortable: true,
-          value: 'name'
-        },
-        {
-          text: this.$i18n.t('common.CREATED'),
-          align: 'left',
-          sortable: true,
-          value: 'createdAt'
-        },
-        {
-          text: this.$i18n.t('common.UPDATED'),
-          align: 'left',
-          sortable: true,
-          value: 'updatedAt'
-        }
-      ]
-    },
-    items() {
-      return this.$store.state.adminCities.cities
-    },
-    totalItems() {
-      return this.$store.state.adminCities.totalCities
-    }
-  },
-  watch: {
-    dialog(value) {
-      return value ? true : this.close()
-    },
-    pagination: {
-      async handler() {
-        try {
-          this.dataTableLoading = true
-          await this.getCities(
-            buildPayloadPagination(this.pagination, this.buildSearch())
-          )
-          this.dataTableLoading = false
-          // eslint-disable-next-line no-unused-vars
-        } catch (error) {
-          this.dataTableLoading = false
-        }
+    })
+
+    const headers = computed(() => [
+      {
+        text: $t('dataTable.ACTIONS'),
+        value: '_id',
+        sortable: false,
+        width: 100
       },
-      deep: true
-    },
-    async search() {
-      clearTimeout(this.delayTimer)
-      this.delayTimer = setTimeout(() => {
-        this.doSearch()
-      }, 400)
+      {
+        text: $t('cities.headers.NAME'),
+        align: 'left',
+        sortable: true,
+        value: 'name'
+      },
+      {
+        text: $t('common.CREATED'),
+        align: 'left',
+        sortable: true,
+        value: 'createdAt'
+      },
+      {
+        text: $t('common.UPDATED'),
+        align: 'left',
+        sortable: true,
+        value: 'updatedAt'
+      }
+    ])
+    const items = computed(() => adminCitiesStore.cities)
+    const totalItems = computed(() => adminCitiesStore.totalCities)
+
+    const close = () => {
+      dialog.value = false
+      setTimeout(() => {
+        editedItem.value = Object.assign({}, defaultItem.value)
+      }, 300)
     }
-  },
-  methods: {
-    ...mapActions(['getCities', 'editCity', 'saveCity', 'deleteCity']),
-    getFormat(date) {
-      window.__localeId__ = this.$store.getters.locale
-      return getFormat(date, 'iii, MMMM d yyyy, h:mm a')
-    },
-    async doSearch() {
+
+    const localeStore = useLocaleStore()
+    const getFormat = (date) => {
+      window.__localeId__ = localeStore.locale
+      return utilGetFormat(date, 'iii, MMMM d yyyy, h:mm a')
+    }
+
+    // eslint-disable-next-line prettier/prettier
+    const { getCities, editCity, saveCity, deleteCity } = adminCitiesStore
+
+    const doSearch = async () => {
       try {
-        this.dataTableLoading = true
-        await this.getCities(
+        dataTableLoading.value = true
+        await getCities(
           buildPayloadPagination(this.pagination, this.buildSearch())
         )
-        this.dataTableLoading = false
+        dataTableLoading.value = false
         // eslint-disable-next-line no-unused-vars
       } catch (error) {
-        this.dataTableLoading = false
+        dataTableLoading.value = false
       }
-    },
-    buildSearch() {
-      return this.search
-        ? { query: this.search, fields: this.fieldsToSearch.join(',') }
+    }
+
+    const buildSearch = () => {
+      return search.value
+        ? { query: search.value, fields: this.fieldsToSearch.join(',') }
         : {}
-    },
-    editItem(item) {
-      this.editedItem = Object.assign({}, item)
-      this.dialog = true
-    },
-    async deleteItem(item) {
+    }
+
+    const editItem = (item) => {
+      editedItem.value = Object.assign({}, item)
+      dialog.value = true
+    }
+
+    const confirm = useConfirm()
+    const deleteItem = async (item) => {
       try {
-        const response = await this.$confirm(
-          this.$t('common.DO_YOU_REALLY_WANT_TO_DELETE_THIS_ITEM'),
+        const response = await confirm(
+          $t('common.DO_YOU_REALLY_WANT_TO_DELETE_THIS_ITEM'),
           {
-            title: this.$t('common.WARNING'),
-            buttonTrueText: this.$t('common.DELETE'),
-            buttonFalseText: this.$t('common.CANCEL'),
+            title: $t('common.WARNING'),
+            buttonTrueText: $t('common.DELETE'),
+            buttonFalseText: $t('common.CANCEL'),
             buttonTrueColor: 'red lighten3',
             buttonFalseColor: 'green'
           }
         )
         if (response) {
-          this.dataTableLoading = true
-          await this.deleteCity(item._id)
-          await this.getCities(
+          dataTableLoading.value = true
+          await deleteCity(item._id)
+          await getCities(
             buildPayloadPagination(this.pagination, this.buildSearch())
           )
-          this.dataTableLoading = false
+          dataTableLoading.value = false
         }
         // eslint-disable-next-line no-unused-vars
       } catch (error) {
-        this.dataTableLoading = false
+        dataTableLoading.value = false
       }
-    },
-    close() {
-      this.dialog = false
-      setTimeout(() => {
-        this.editedItem = Object.assign({}, this.defaultItem)
-      }, 300)
-    },
-    async save() {
-      const isValid = await this.$refs.observer.validate()
+    }
+
+    const observer = ref(null)
+    const save = async () => {
+      const isValid = await observer.value?.validate()
       if (isValid) {
         try {
           this.dataTableLoading = true
@@ -343,8 +330,64 @@ export default {
         }
       }
     }
+
+    watchEffect(() => {
+      if (dialog.value) {
+        close()
+      }
+    })
+
+    watchEffect(
+      async () => {
+        try {
+          dataTableLoading.value = true
+          await getCities(
+            buildPayloadPagination(pagination.value, buildSearch())
+          )
+          dataTableLoading.value = false
+          // eslint-disable-next-line no-unused-vars
+        } catch (error) {
+          this.dataTableLoading = false
+        }
+      },
+      { deep: true }
+    )
+
+    watchEffect((onInvalidate) => {
+      delayTimer.value = setTimeout(() => {
+        doSearch()
+      }, 400)
+      onInvalidate(() => {
+        clearTimeout(delayTimer.value)
+      })
+    })
+
+    return {
+      dataTableLoading,
+      delayTimer,
+      dialog,
+      search,
+      pagination,
+      editedItem,
+      defaultItem,
+      fieldsToSearch,
+      formTitle,
+      headers,
+      getCities,
+      editCity,
+      saveCity,
+      deleteCity,
+      items,
+      totalItems,
+      getFormat,
+      doSearch,
+      buildSearch,
+      editItem,
+      deleteItem,
+      save
+    }
   }
-}
+})
 </script>
 
 <style>
